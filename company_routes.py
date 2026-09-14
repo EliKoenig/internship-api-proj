@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from models import CompanyCreate, CompanyUpdate
+from schemas import CompanyCreate, CompanyUpdate
 from database import companies, counters
 
 router = APIRouter()
@@ -39,7 +39,7 @@ def get_company(company_id: int):
 def update_company(company_id: int, updates: CompanyUpdate):
     for company in companies:
         if company["id"] == company_id:
-            update_data = updates.dict(exclude_unset=True)
+            update_data = updates.model_dump(exclude_unset=True)
             company.update(update_data)
             return company
 

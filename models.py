@@ -1,23 +1,19 @@
-from pydantic import BaseModel
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey
+from database import Base
 
-#Create classes for information CRUD properties
-class CompanyCreate(BaseModel):
-    name: str
-    website: str | None = None
-    notes: str | None = None
+class Company(Base):
+    __tablename__ = "companies"
 
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column()
+    website: Mapped[str | None] = mapped_column()
+    notes: Mapped[str | None] = mapped_column()
 
-class CompanyUpdate(BaseModel):
-    name: str | None = None
-    website: str | None = None
-    notes: str | None = None
+class Application(Base):
+    __tablename__ = "applications"
 
-class ApplicationCreate(BaseModel):
-    company_id: int
-    position: str
-    status: str
-
-class ApplicationUpdate(BaseModel):
-    company_id: int | None = None
-    position: str | None = None
-    status: str | None = None
+    id: Mapped[int] = mapped_column(primary_key=True)
+    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"))
+    position: Mapped[str] = mapped_column()
+    status: Mapped[str] = mapped_column()

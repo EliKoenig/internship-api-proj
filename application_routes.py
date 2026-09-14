@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from models import ApplicationCreate, ApplicationUpdate
+from schemas import ApplicationCreate, ApplicationUpdate
 from database import companies, applications, counters
 
 router = APIRouter()
@@ -64,7 +64,7 @@ def update_application(application_id: int, updates: ApplicationUpdate):
 
     for application in applications:
         if application["id"] == application_id:
-            update_data = updates.dict(exclude_unset=True)
+            update_data = updates.model_dump(exclude_unset=True)
             application.update(update_data)
             return application
 
