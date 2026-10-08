@@ -228,7 +228,7 @@ def test_update_application(client):
     response = client.patch(
         f"/applications/{application_id}",
         json={
-            "status": "Interview"
+            "status": "Interviewing"
         },
     )
 
@@ -239,7 +239,7 @@ def test_update_application(client):
     assert data["id"] == application_id
     assert data["company_id"] == company_id
     assert data["position"] == "Software Engineer Intern"
-    assert data["status"] == "Interview"
+    assert data["status"] == "Interviewing"
 
 def test_delete_application(client):
     create_company = client.post(

@@ -7,6 +7,11 @@ class CompanyCreate(BaseModel):
     website: str | None = None
     notes: str | None = None
 
+class ApplicationStatus(str, Enum):
+    applied = "Applied"
+    interview = "Interviewing"
+    offer = "Offer"
+    rejected = "Rejected"
 
 class CompanyUpdate(BaseModel):
     name: str | None = None
@@ -23,8 +28,3 @@ class ApplicationUpdate(BaseModel):
     position: str | None = None
     status: ApplicationStatus | None = None
 
-class ApplicationStatus(str, Enum):
-    applied = "Applied"
-    interview = "Interviewing"
-    offer = "Offer"
-    rejected = "Rejected"
