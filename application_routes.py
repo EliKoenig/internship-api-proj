@@ -6,7 +6,7 @@ from database import companies, applications, counters
 router = APIRouter()
 
 
-@router.post("/applications")
+@router.post("/applications", status_code=201)
 def create_application(application: ApplicationCreate):
 
     for company in companies:
