@@ -11,7 +11,7 @@ def get_companies():
     return companies
 
 
-@router.post("/companies")
+@router.post("/companies", status_code=201)
 def create_company(company: CompanyCreate):
     new_company = {
         "id": counters["company_id"],
