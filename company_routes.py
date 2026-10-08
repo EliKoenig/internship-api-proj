@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from schemas import CompanyCreate, CompanyUpdate
-from database import companies, counters
+from database import companies, counters, applications
 
 router = APIRouter()
 
@@ -48,6 +48,12 @@ def update_company(company_id: int, updates: CompanyUpdate):
 
 @router.delete("/companies/{company_id}")
 def delete_company(company_id: int):
+    for index, application in enumerate(applications):
+        if application["company_id"] == company_id:
+            raise HTTPException(
+                status_code=409,
+                detail="Cannot delete company with associated applications",
+            )
     for index, company in enumerate(companies):
         if company["id"] == company_id:
             deleted_company = companies.pop(index)
