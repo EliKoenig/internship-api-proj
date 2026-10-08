@@ -288,3 +288,26 @@ def test_create_application_invalid_company(client):
     data = response.json()
 
     assert data["detail"] == "Company with corresponding ID not found"
+
+def test_create_applicaiton_invalid_status(client):
+    create_company = client.post(
+        "/companies",
+        json={
+            "name": "NVIDIA",
+            "website": "https://www.nvidia.com",
+            "notes": "Dream internship",
+        },
+    )
+
+    company_id = create_company.json()["id"]
+
+    response = client.post(
+        "/applications",
+        json={
+            "company_id": company_id,
+            "position": "Software Engineer Intern",
+            "status": "InvalidStatus",
+        },
+    )
+
+    assert response.status_code == 422

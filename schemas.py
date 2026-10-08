@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from enum import Enum
 
 #Create classes for information CRUD properties
 class CompanyCreate(BaseModel):
@@ -15,9 +16,15 @@ class CompanyUpdate(BaseModel):
 class ApplicationCreate(BaseModel):
     company_id: int
     position: str
-    status: str
+    status: ApplicationStatus
 
 class ApplicationUpdate(BaseModel):
     company_id: int | None = None
     position: str | None = None
-    status: str | None = None
+    status: ApplicationStatus | None = None
+
+class ApplicationStatus(str, Enum):
+    applied = "Applied"
+    interview = "Interviewing"
+    offer = "Offer"
+    rejected = "Rejected"
