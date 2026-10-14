@@ -311,3 +311,32 @@ def test_create_applicaiton_invalid_status(client):
     )
 
     assert response.status_code == 422
+
+def test_delete_company_with_associated_applications(client):
+    create_company = client.post(
+        "/companies",
+        json={
+            "name": "NVIDIA",
+            "website": "https://www.nvidia.com",
+            "notes": "Dream internship",
+        },
+    )
+
+    company_id = create_company.json()["id"]
+
+    client.post(
+        "/applications",
+        json={
+            "company_id": company_id,
+            "position": "Software Engineer Intern",
+            "status": "Applied",
+        },
+    )
+
+    response = client.delete(f"/companies/{company_id}")
+
+    assert response.status_code == 409
+
+    data = response.json()
+
+    assert data["detail"] == "Cannot delete company with associated applications"
