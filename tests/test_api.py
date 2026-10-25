@@ -350,11 +350,11 @@ def test_cors_allows_frontend_origin(client):
 
     assert response.headers.get("access-control-allow-origin") == "http://localhost:5173"
 
-def test_cors_blocks_unkown_origin(client):
+def test_cors_blocks_unknown_origin(client):
     response = client.get(
         "/",
         headers={"Origin": "http://evilguy.com"},
     )
     assert response.status_code == 200
 
-    assert response.headers.get("access-control-allow-origin") != "http://evilguy.com"
+    assert "access-control-allow-origin" not in response.headers
