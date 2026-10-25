@@ -8,10 +8,10 @@ class CompanyCreate(BaseModel):
     notes: str | None = None
 
 class ApplicationStatus(str, Enum):
-    applied = "Applied"
-    interview = "Interviewing"
-    offer = "Offer"
-    rejected = "Rejected"
+    applied = "applied"
+    interview = "interview"
+    offer = "offer"
+    rejected = "rejected"
 
 class CompanyUpdate(BaseModel):
     name: str | None = None

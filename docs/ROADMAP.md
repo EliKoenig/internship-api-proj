@@ -54,7 +54,7 @@ DELETE /applications/{id}
 |---|---|---|---|
 | 1 (done) | Local REST API | FastAPI; request and response models; validation; Swagger/OpenAPI docs; GitHub repo. | The API runs locally with documented endpoints. |
 | 1.5 (done) | Tests + GitHub Actions | Endpoint and unit tests; test data; CI workflow on pushes and pull requests. | A failing test blocks the build, and the README explains how to run tests. |
-| 2 | Database + frontend prep | Persistent database (PostgreSQL in Docker); schema, constraints, migrations. Add CORS, an application status field (Applied, Interview, Offer, Rejected), and any filter endpoints the UI needs. | Data survives restarts and the browser can call the API. |
+| 2 | Database + frontend prep | Persistent database (PostgreSQL in Docker); schema, constraints, migrations. Add CORS, an application status field (`applied`, `interview`, `offer`, `rejected`), and any filter endpoints the UI needs. | Data survives restarts and the browser can call the API. |
 | 2.5 | Frontend MVP | React + TypeScript (Vite). Page that lists applications; form to add companies and applications; TypeScript types that match the Pydantic schemas; API base URL from an env variable. | You can view and add applications in the browser against the local API. |
 | 3 | Deploy early | Backend on AWS App Runner (or Render/Railway to start) with managed Postgres; frontend on Vercel/Netlify (or S3 + CloudFront). Health check, logs, env-based config. Use demo data only until auth exists. | A public link works end to end and is at the top of the README. |
 | 4 | Frontend features | Status dropdown, filters, edit and delete, notes, basic styling, loading and error states. | The app is pleasant to use for a real job search. |
