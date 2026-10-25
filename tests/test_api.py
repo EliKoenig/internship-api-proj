@@ -340,3 +340,21 @@ def test_delete_company_with_associated_applications(client):
     data = response.json()
 
     assert data["detail"] == "Cannot delete company with associated applications"
+
+def test_cors_allows_frontend_origin(client):
+    response = client.get(
+        "/",
+        headers={"Origin": "http://localhost:5173"},
+    )
+    assert response.status_code == 200
+
+    assert response.headers.get("access-control-allow-origin") == "http://localhost:5173"
+
+def test_cors_blocks_unknown_origin(client):
+    response = client.get(
+        "/",
+        headers={"Origin": "http://evilguy.com"},
+    )
+    assert response.status_code == 200
+
+    assert "access-control-allow-origin" not in response.headers
