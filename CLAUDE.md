@@ -30,7 +30,9 @@ Eli is using this project to learn and must be able to **explain every part of i
 
 ## Environment
 
-- Windows, **PowerShell**, Python 3.14. Local repo: `C:\Users\EliFi\Documents\GitHub\internship-api-proj`
+- Windows, **PowerShell**, Python 3.14. Local repo: `C:\Users\EliFi\Documents\VS Code\Internship_API_Proj`
+  (Eli's VS Code folder; Claude must work here too. An old second clone at `C:\Users\EliFi\Documents\GitHub\internship-api-proj`
+  caused confusion and can be deleted. Don't use it.)
 - Activate the venv: `.\.venv\Scripts\Activate.ps1` (the `.\` is required in PowerShell)
   - "No module named pytest/fastapi" almost always means the venv isn't active or packages aren't installed
     (`python -m pip install -r requirements.txt`).
@@ -56,7 +58,7 @@ Eli is using this project to learn and must be able to **explain every part of i
 | 6 | Optional AI feature: paste a job posting, LLM pre-fills the form | ⬜ |
 | 7 | Polish: README with live link, diagram, demo GIF, AI_USAGE.md | ⬜ |
 
-## Current state of the code (late October 2026)
+## Current state of the code (early November 2026)
 
 - **No persistence.** Routes store data in Python lists in `database.py` (`companies`, `applications`, `counters`).
   Everything is lost when the server restarts.
@@ -64,36 +66,40 @@ Eli is using this project to learn and must be able to **explain every part of i
   No tables are ever created.
 - `models.py` defines SQLAlchemy `Company` and `Application` models (FK `company_id`), **not used by any route**.
   `Application.status` there is a plain `str`.
-- **Status field:** exists at the API level. `schemas.py` has `ApplicationStatus(str, Enum)` with
-  `Applied`, `Interviewing`, `Offer`, `Rejected`; invalid values get a 422. (The roadmap says "Interview"; the code says "Interviewing".)
+- **Status field:** `schemas.py` has `ApplicationStatus(str, Enum)` with lowercase values
+  `applied`, `interview`, `offer`, `rejected` (Eli's choice, PR #6); invalid values get a 422. The frontend will map
+  these to display labels. Code and `docs/ROADMAP.md` match.
+- **CORS:** `CORSMiddleware` in `main.py` allows only `http://localhost:5173` (Vite dev server), methods and headers `*` (PR #5).
+  The deployed frontend's URL must be added to `allow_origins` in Phase 3.
 - No Postgres driver, Alembic, or Docker Compose yet. No response models (routes return dicts).
 - `POST` routes return 201. Applications must reference an existing company (400 otherwise).
   Deleting a company that still has applications returns 409 (Eli chose blocking over cascade delete).
-- 16 tests on `feature/cors`, 14 on `main`.
+- 16 tests on `main`, all passing.
 
 ## Where we are right now
 
-**In progress: CORS (Phase 2, step 3)** on branch `feature/cors` (pushed, not merged).
-- Done: `CORSMiddleware` in `main.py` allowing `http://localhost:5173` (Vite dev server), methods and headers `*`;
-  tests `test_cors_allows_frontend_origin` and `test_cors_blocks_unkown_origin`.
-- Review fixes still to make before merging:
-  1. `test_cors_blocks_unkown_origin` asserts `headers.get(...) != "http://evilguy.com"`, which would still pass if
-     `allow_origins` became `["*"]`. Change to `assert "access-control-allow-origin" not in response.headers`.
-  2. Rename `unkown` → `unknown`.
-  3. Move the `CORSMiddleware` import up next to `from fastapi import FastAPI`.
-- Then: tests pass → push → PR → green check → merge.
+**Next: Phase 2.5, frontend MVP (step 11).** Node.js is **not installed** on this machine yet; Eli needs Node LTS
+from nodejs.org, then a new terminal and `node --version`.
+
+**Decision (Nov 2026):** Eli wants to reach the frontend as fast as possible for the TELUS application. Steps 5–10
+(database) are deferred: the frontend talks HTTP and doesn't care that data lives in Python lists for now. Step 5
+(SQLAlchemy) comes back before Phase 3, because deploying needs real persistence.
 
 Eli's understanding of why not `allow_origins=["*"]` (worth reinforcing): CORS is a browser rule, not access control;
 it limits which websites can call the API from a visitor's browser. Matters once auth exists. Real protection is auth.
+The blocked-origin test asserts the header is absent; Claude confirmed it fails when `allow_origins` is set to `["*"]`
+(suggested Eli try this once, as a mutation-testing example to explain in interviews).
 
 ## Checklist (in order)
 
 **Phase 2: database + frontend prep**
 1. ~~Merge `feature/company-delete`~~ ✅ (PR #3)
 2. ~~Add CLAUDE.md, ROADMAP.md, settings~~ ✅ (PR #4)
-3. CORS ← **current**
-4. Pick status values: `Interview` vs `Interviewing`, and whether to use lowercase values. Make code and `docs/ROADMAP.md` match.
-   Eli's decision; the frontend's TS types will copy it.
+3. ~~CORS~~ ✅ (PR #5)
+4. ~~Pick status values~~ ✅ (PR #6): lowercase `applied`, `interview`, `offer`, `rejected`.
+
+Steps 5–10 are deferred until the frontend MVP works (see "Where we are right now"). Do step 5 before Phase 3.
+
 5. Switch routes to SQLAlchemy on SQLite: `get_db` dependency (`connect_args={"check_same_thread": False}`), read schemas with
    `ConfigDict(from_attributes=True)` + `response_model=`, temporary `Base.metadata.create_all`, test DB via
    `app.dependency_overrides`, `*.db` in `.gitignore`. Companies first, then applications. Biggest step: go slowly.
@@ -103,8 +109,8 @@ it limits which websites can call the API from a visitor's browser. Matters once
 9. Filter endpoint: `GET /applications?status=...&company_id=...`.
 10. Postgres service container in CI.
 
-**Phase 2.5: frontend MVP** (can start after CORS merges, in parallel with 5–10)
-11. Node LTS; `npm create vite@latest` (React + TypeScript) in `frontend/`.
+**Phase 2.5: frontend MVP**
+11. Node LTS ← **next**; `npm create vite@latest` (React + TypeScript) in `frontend/`.
 12. API base URL from `VITE_API_URL`.
 13. TS types matching `CompanyCreate`, `ApplicationCreate`, `ApplicationStatus`.
 14. Applications list page with loading and error states.
@@ -113,9 +119,12 @@ it limits which websites can call the API from a visitor's browser. Matters once
 **Anytime / small**
 - Failure-case tests: 404 for GET/PATCH/DELETE missing company, 404 for GET missing application,
   400 for PATCH application with bad `company_id`, 422 for POST company without `name`.
-- Start `AI_USAGE.md` (not created yet). Remind Eli.
+- Start `AI_USAGE.md` (not created yet). Remind Eli. Entries owed: Claude made the CORS test fixes (checked by
+  setting `allow_origins=["*"]` and watching the test fail) and the status-value find-and-replace in the tests (checked with pytest + diff).
 - README: add the PowerShell activate command (`.\.venv\Scripts\Activate.ps1`) next to `activate.bat`.
-- Move `ApplicationStatus` next to the application schemas; fix the `applicaiton` typo in a test name.
+- Move `ApplicationStatus` next to the application schemas.
+- `git stash` holds a small cleanup from the old `feature/company-delete` branch: drop the unused `index`/`enumerate`
+  in `delete_company` (`company_routes.py`). Apply on its own branch and run tests.
 
 ## Things Eli has tripped on (help quickly)
 
@@ -124,6 +133,10 @@ it limits which websites can call the API from a visitor's browser. Matters once
   "Python: Select Interpreter" → `.venv` makes new terminals auto-activate.
 - Committing before saving or without running tests. Encourage `git status` + `python -m pytest` before every commit.
 - Pushing a new branch needs `git push -u origin <branch>`; "src refspec … does not match any" means the branch wasn't created.
+- Two clones of the repo on one machine: Claude and Eli edited different folders, so changes and branches seemed to vanish.
+  If Eli's output doesn't match what Claude sees, first compare `pwd` with Claude's working directory.
+- Pushing a branch doesn't open a PR. Check the repo's Pull requests tab (or the GitHub API) before saying a PR exists.
+- After merging on GitHub, forgetting `git switch main && git pull`, so the local checkout stays on the old branch.
 
 ## Code layout
 
