@@ -124,7 +124,7 @@ def test_create_application(client):
         json={
             "company_id": company_id,
             "position": "Software Engineer Intern",
-            "status": "Applied",
+            "status": "applied",
         },
     )
 
@@ -134,7 +134,7 @@ def test_create_application(client):
 
     assert data["company_id"] == company_id
     assert data["position"] == "Software Engineer Intern"
-    assert data["status"] == "Applied"
+    assert data["status"] == "applied"
 
 def test_get_applications(client):
     create_company = client.post(
@@ -153,7 +153,7 @@ def test_get_applications(client):
         json={
             "company_id": company_id,
             "position": "Software Engineer Intern",
-            "status": "Applied",
+            "status": "applied",
         },
     )
 
@@ -166,7 +166,7 @@ def test_get_applications(client):
     assert len(data) == 1
     assert data[0]["company_id"] == company_id
     assert data[0]["position"] == "Software Engineer Intern"
-    assert data[0]["status"] == "Applied"
+    assert data[0]["status"] == "applied"
 
 def test_get_application(client):
     create_company = client.post(
@@ -185,7 +185,7 @@ def test_get_application(client):
         json={
             "company_id": company_id,
             "position": "Software Engineer Intern",
-            "status": "Applied",
+            "status": "applied",
         },
     )
 
@@ -200,7 +200,7 @@ def test_get_application(client):
     assert data["id"] == application_id
     assert data["company_id"] == company_id
     assert data["position"] == "Software Engineer Intern"
-    assert data["status"] == "Applied"
+    assert data["status"] == "applied"
 
 def test_update_application(client):
     create_company = client.post(
@@ -219,7 +219,7 @@ def test_update_application(client):
         json={
             "company_id": company_id,
             "position": "Software Engineer Intern",
-            "status": "Applied",
+            "status": "applied",
         },
     )
 
@@ -228,7 +228,7 @@ def test_update_application(client):
     response = client.patch(
         f"/applications/{application_id}",
         json={
-            "status": "Interviewing"
+            "status": "interview"
         },
     )
 
@@ -239,7 +239,7 @@ def test_update_application(client):
     assert data["id"] == application_id
     assert data["company_id"] == company_id
     assert data["position"] == "Software Engineer Intern"
-    assert data["status"] == "Interviewing"
+    assert data["status"] == "interview"
 
 def test_delete_application(client):
     create_company = client.post(
@@ -258,7 +258,7 @@ def test_delete_application(client):
         json={
             "company_id": company_id,
             "position": "Software Engineer Intern",
-            "status": "Applied",
+            "status": "applied",
         },
     )
 
@@ -278,7 +278,7 @@ def test_create_application_invalid_company(client):
         json={
             "company_id":  999,
             "position":  "Software Engineer Intern",
-            "status": "Applied",
+            "status": "applied",
         },
     )
 
@@ -289,7 +289,7 @@ def test_create_application_invalid_company(client):
 
     assert data["detail"] == "Company with corresponding ID not found"
 
-def test_create_applicaiton_invalid_status(client):
+def test_create_application_invalid_status(client):
     create_company = client.post(
         "/companies",
         json={
@@ -329,7 +329,7 @@ def test_delete_company_with_associated_applications(client):
         json={
             "company_id": company_id,
             "position": "Software Engineer Intern",
-            "status": "Applied",
+            "status": "applied",
         },
     )
 
